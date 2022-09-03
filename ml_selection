@@ -1,0 +1,51 @@
+import numpy as np
+import re
+import pickle
+
+class text(object):
+
+  #метод fit
+  def fit(self):
+    
+    #получим исходный текст с клавиатуры и преобразуем его
+    initial_text = str(input())
+    initial_text = initial_text.lower()
+    initial_text = initial_text.strip()
+    initial_text = re.split("[^a-zа-яё]+", initial_text)
+    
+    #создадим словарь префикс:возможное слово после него
+    words_for_prefixes = {}
+    for i in range(len(initial_text)-1):
+      #если список возможных продолжений непустой, то добавим в него следующее слово
+      if words_for_prefixes.get(initial_text[i], None):
+        probable_words_after = words_for_prefixes.get(initial_text[i])
+        probable_words_after.append(initial_text[i+1])
+        words_for_prefixes[initial_text[i]] = probable_words_after
+      #если пустой, то создадим его и добавим туда следующее слово
+      else:
+        words_for_prefixes[initial_text[i]] = initial_text[i+1]
+       
+    #сохраним в файл
+    pickle.dump(words_for_prefixes, file, protocol = None, *, fix_imports = True)
+    
+  #метод generate
+  def generate(self):
+    
+    #загрузим данные из файла
+    words_for_prefixes = pickle.load(file)
+    
+    #получим с клавиатуры требуемое количество слов в новом тексте и сгенерируем текст
+    n = int(input())
+    #генерация первого слова в тексте
+    last_word = np.random.choice(list(words_for_prefixes.keys()))
+    new_text = last_word + ''
+    #генерация последующих слов
+    for i in range(n-1):
+      next_word = np.random.choice(words_for_prefixes.setdefault(last_word))
+      new_text += next_word + ''
+      last_word = next_word
+    return new_text
+
+#вывод сгенерированного текста
+print(text().generate())
+    
